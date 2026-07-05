@@ -1,7 +1,6 @@
 package com.shubham.job_tracker.service;
 
 import ch.qos.logback.core.util.StringUtil;
-import ch.qos.logback.core.util.TimeUtil;
 import com.shubham.job_tracker.dto.JobStatus;
 import com.shubham.job_tracker.dto.job.*;
 import com.shubham.job_tracker.entity.JobEntry;
@@ -9,15 +8,13 @@ import com.shubham.job_tracker.entity.JobUser;
 import com.shubham.job_tracker.repository.JobEntryRepository;
 import com.shubham.job_tracker.repository.JobUserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -126,6 +123,7 @@ public class JobServiceImpl implements JobService {
 
     private String getJobStatus(String status) {
         try {
+
             return JobStatus.valueOf(status.toUpperCase()).getDisplayName();
         } catch (IllegalArgumentException | NullPointerException e) {
             throw e;
@@ -158,18 +156,11 @@ public class JobServiceImpl implements JobService {
 
     @Transactional
     @Override
-    public JobApplication getMyJobApplication(Long userId) {
+    public JobApplication getMyJobApplication(MyApplicationRequest request) {
         try {
-            Optional<JobUser> jobUserOptional = userRepository.findByUserId(userId);
-            if (jobUserOptional.isEmpty()){
-                return JobApplication.builder()
-                        .message("Invalid user id : "+userId+" No user found")
-                        .code(404L)
-                        .build();
-            }
+            List<JobEntry> jobEntryList = jobApplicationHelper(request);
 
-            List<JobEntry> jobEntries = jobUserOptional.get().getJobEntry();
-            List<JobDetails> jobDetailsEntries = jobEntries.stream().map(application -> JobDetails.builder()
+            List<JobDetails> jobDetailsEntries = jobEntryList.stream().map(application -> JobDetails.builder()
                     .jobId(application.getJobId())
                     .companyName(application.getCompanyName())
                     .description(application.getDescription())
@@ -195,5 +186,18 @@ public class JobServiceImpl implements JobService {
                     .build();
         }
 
+    }
+
+    private List<JobEntry> jobApplicationHelper(MyApplicationRequest request){
+        Sort sort = null;
+        if (request.sortOrder() != null && request.sortOrder().equalsIgnoreCase("asc")){
+            sort = Sort.by("dateOfApplication").ascending();
+        }else {
+            sort = Sort.by("dateOfApplication").descending();
+        }
+        if(request.status() != null){
+            return repository.findAllByUserUserIdAndStatus(request.userId(),request.status(),sort);
+        }
+        return repository.findAllByUserUserId(request.userId(),sort);
     }
 }

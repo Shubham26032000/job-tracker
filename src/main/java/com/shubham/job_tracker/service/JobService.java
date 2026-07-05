@@ -11,6 +11,6 @@ public interface JobService {
 
     JobDetails getJob(Long jobId);
 
-    JobApplication getMyJobApplication(Long userId);
+    JobApplication getMyJobApplication(MyApplicationRequest request);
 
 }

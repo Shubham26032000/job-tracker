@@ -54,8 +54,8 @@ public class JobController {
     }
 
     @GetMapping("/applications")
-    ResponseEntity<JobApplication> getMyJob(@RequestParam("userId") Long userId) {
-        JobApplication jobApplication = service.getMyJobApplication(userId);
+    ResponseEntity<JobApplication> getMyJob(@RequestBody MyApplicationRequest request) {
+        JobApplication jobApplication = service.getMyJobApplication(request);
 
         if (jobApplication.code() != 200) {
             throw new FailureException(jobApplication.code(), jobApplication.message());
