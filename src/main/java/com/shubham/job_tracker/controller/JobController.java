@@ -7,6 +7,8 @@ import com.shubham.job_tracker.service.JobService;
 import com.shubham.job_tracker.utils.JobValidationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -62,6 +64,17 @@ public class JobController {
         }
 
         return new ResponseEntity<>(jobApplication, HttpStatus.OK);
+    }
+
+    @GetMapping("/current/user")
+    public String currentUser(Authentication authentication){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Name "+authentication.getName());
+        System.out.println("getAuthorities "+authentication.getAuthorities());
+        System.out.println("getCredentials "+authentication.getCredentials());
+        System.out.println("getDetails "+authentication.getDetails());
+        System.out.println("getPrincipal "+authentication.getPrincipal());
+        return "logged om user : "+authentication.getName();
     }
 
 
