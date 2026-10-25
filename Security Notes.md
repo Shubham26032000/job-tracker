@@ -21,7 +21,7 @@ Know these three terms:
 ####PasswordEncoder 
 -  .encode(YOUR_ACTUAL_PASSWORD)  
    this method encode your passowrd basically it gives the hash code not actual encode.
--  .matches(YOUR_ACTUAL_PASSWORD, encodedPassword) 
+-  .matches(YOUR_ACTUAL_PASSWORD, encodedPassword)  
    this method will match your actual password with encoded hash if password match it will give true else false.
 
 Component	Responsibility

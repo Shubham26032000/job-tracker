@@ -6,6 +6,7 @@ import com.shubham.job_tracker.entity.JobEntry;
 import com.shubham.job_tracker.entity.JobUser;
 import com.shubham.job_tracker.repository.JobUserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,9 +16,11 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final JobUserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(JobUserRepository repository) {
+    public UserServiceImpl(JobUserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -27,7 +30,8 @@ public class UserServiceImpl implements UserService {
                 .firstName(request.firstName())
                 .lastName(request.lastName())
                 .email(request.email())
-                .password(request.password())
+                .password(passwordEncoder.encode(request.password()))
+                .role("USER")
                 .build();
         try {
             JobUser user = repository.save(jobUser);
