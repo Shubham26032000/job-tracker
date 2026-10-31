@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -110,5 +111,18 @@ public class UserServiceImpl implements UserService {
                 .email(jobUser.getEmail())
                 .code(200L)
                 .build();
+    }
+
+    @Override
+    public List<UserDetailsResponse> getAllUsers() {
+        List<JobUser> jobUsers = repository.findAll();
+        return jobUsers.stream()
+                .map(user -> UserDetailsResponse.builder()
+                        .userId(user.getUserId())
+                        .email(user.getEmail())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .build())
+                .toList();
     }
 }

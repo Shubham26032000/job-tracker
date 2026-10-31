@@ -24,6 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .username(jobUser.getEmail())
                 .password(jobUser.getPassword())
                 .roles(jobUser.getRole())
+//                .authorities(jobUser.getRole())
                 .build();
     }
 }
