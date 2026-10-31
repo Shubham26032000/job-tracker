@@ -32,9 +32,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
-                .cors(Customizer.withDefaults())
-//                .csrf(AbstractHttpConfigurer::disable)
-                .csrf(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())   //disable this line if not required
+                .csrf(AbstractHttpConfigurer::disable)
+//                .csrf(Customizer.withDefaults())
                 .authorizeHttpRequests(auth->
                 auth
                         .requestMatchers("/error").permitAll()
