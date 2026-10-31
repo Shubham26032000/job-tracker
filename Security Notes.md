@@ -36,7 +36,7 @@ Component	Responsibility
 - Authorities and Roles in userDetails 
   -
 and their respective things in filter chain
- - Final Note
+ - Final Note (USerDetails(roles/authorities) and  (hasRole/hasAuthority))
    - when you save userRole as "ROLE_USER" with prefix "ROLE_" then use authorities
    - when normal "USER" then use roles()
    - in filters hasRole always use "USER" without prefix irrespective of how you store in DB and that will not work as expected when you store authorities("USER").
@@ -49,3 +49,24 @@ and their respective things in filter chain
   - hasAuthority("USER") checks exactly USER.
   - hasAuthority("ROLE_USER") checks exactly ROLE_USER.
   - .roles() automatically adds ROLE_; .authorities() does not.
+
+- Method level Security @PreAuthorize
+  - 
+- we need to add @EnableMethodSecurity on top of security config class
+- why to use this over url based auth
+  - lets suppose you have end point getAllUSer() "/getAll" you added security to this end point
+  - but from another end point this getAllUser() method of service is getting call so this security not becomes secure so to avoid this spring introduce method security which will then check authenticity before invoking method.
+- we need to add on method
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<UserDetailsResponse> getAllUsers() {
+  List<JobUser> jobUsers = repository.findAll();
+
+- Method level Security @PostAuthorize
+  - 
+- simillar to preauthorize but it runs post data is completed or fetch
+- usecase when you need to have validation before sending data back to caller that time it's used.
+ example code :
+  @PostAuthorize("returnObject.email == authentication.name")
+  public UserDetailsResponse getUser(Long userId) {
+  Optional<JobUser> optionalJobUser = repository.findByUserId(userId);
+

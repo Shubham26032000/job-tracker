@@ -3,6 +3,7 @@ package com.shubham.job_tracker.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -20,7 +22,7 @@ public class SecurityConfig {
                 auth
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/v1/job/").hasRole("USER")
-                        .requestMatchers("/api/v1/user/users").hasRole("ADMIN")
+//                        .requestMatchers("/api/v1/user/users").hasRole("ADMIN")
 //                        .requestMatchers("/api/v1/user/users").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/user",
                                 "/api/v1/user/").permitAll()

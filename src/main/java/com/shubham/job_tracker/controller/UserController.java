@@ -49,7 +49,6 @@ public class UserController {
         if (response.code() != 200){
             throw new FailureException(response.code(),response.message());
         }
-
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

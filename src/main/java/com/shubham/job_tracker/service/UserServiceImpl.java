@@ -6,6 +6,8 @@ import com.shubham.job_tracker.entity.JobEntry;
 import com.shubham.job_tracker.entity.JobUser;
 import com.shubham.job_tracker.repository.JobUserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -90,6 +92,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @PostAuthorize("returnObject.email == authentication.name")
     @Override
     public UserDetailsResponse getUser(Long userId) {
         Optional<JobUser> optionalJobUser = repository.findByUserId(userId);
@@ -113,6 +116,7 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<UserDetailsResponse> getAllUsers() {
         List<JobUser> jobUsers = repository.findAll();
