@@ -7,6 +7,7 @@ import com.shubham.job_tracker.service.UserService;
 import com.shubham.job_tracker.utils.UserValidationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,4 +60,8 @@ public class UserController {
         return new ResponseEntity<>(userDetailsResponses,HttpStatus.OK);
     }
 
+    @GetMapping("/csrf-token")
+    public CsrfToken getCsrfToken(CsrfToken csrfToken) {
+        return csrfToken;
+    }
 }
