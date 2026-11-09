@@ -1,17 +1,15 @@
 package com.shubham.job_tracker.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 @Data
-@ToString
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,8 +19,13 @@ public class JobUser {
     private Long userId;
     private String firstName;
     private String lastName;
+
+    @Column(unique = true,nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+    private String role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<JobEntry> jobEntry;

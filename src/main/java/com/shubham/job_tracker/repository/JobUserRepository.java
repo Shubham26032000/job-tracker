@@ -11,4 +11,6 @@ public interface JobUserRepository extends JpaRepository<JobUser,Long> {
 
     Optional<JobUser> findByUserId(Long userId);
 
+    Optional<JobUser> findByEmail(String email);
+
 }

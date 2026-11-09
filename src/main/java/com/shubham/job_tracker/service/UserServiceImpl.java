@@ -6,8 +6,12 @@ import com.shubham.job_tracker.entity.JobEntry;
 import com.shubham.job_tracker.entity.JobUser;
 import com.shubham.job_tracker.repository.JobUserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,9 +19,11 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final JobUserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(JobUserRepository repository) {
+    public UserServiceImpl(JobUserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -27,7 +33,8 @@ public class UserServiceImpl implements UserService {
                 .firstName(request.firstName())
                 .lastName(request.lastName())
                 .email(request.email())
-                .password(request.password())
+                .password(passwordEncoder.encode(request.password()))
+                .role("USER")
                 .build();
         try {
             JobUser user = repository.save(jobUser);
@@ -85,6 +92,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @PostAuthorize("returnObject.email == authentication.name")
     @Override
     public UserDetailsResponse getUser(Long userId) {
         Optional<JobUser> optionalJobUser = repository.findByUserId(userId);
@@ -106,5 +114,19 @@ public class UserServiceImpl implements UserService {
                 .email(jobUser.getEmail())
                 .code(200L)
                 .build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public List<UserDetailsResponse> getAllUsers() {
+        List<JobUser> jobUsers = repository.findAll();
+        return jobUsers.stream()
+                .map(user -> UserDetailsResponse.builder()
+                        .userId(user.getUserId())
+                        .email(user.getEmail())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .build())
+                .toList();
     }
 }

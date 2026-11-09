@@ -12,7 +12,8 @@ Provides access to the current SecurityContext
 
 SecurityContext → Authentication4
 
-Contains the authenticated identity and granted authorities
+- Contains the authenticated identity and granted authorities
+  -
 Know these three terms:
 - SecurityContextHolder: the access point for the current security context.
 - SecurityContext: holds the current Authentication.
@@ -21,7 +22,7 @@ Know these three terms:
 ####PasswordEncoder 
 -  .encode(YOUR_ACTUAL_PASSWORD)  
    this method encode your passowrd basically it gives the hash code not actual encode.
--  .matches(YOUR_ACTUAL_PASSWORD, encodedPassword) 
+-  .matches(YOUR_ACTUAL_PASSWORD, encodedPassword)  
    this method will match your actual password with encoded hash if password match it will give true else false.
 
 Component	Responsibility
@@ -31,4 +32,41 @@ Component	Responsibility
     Verifies the submitted password against the stored hash
 - SecurityFilterChain	
     Defines which requests need authentication and how authentication is handled
+
+- Authorities and Roles in userDetails 
+  -
+and their respective things in filter chain
+ - Final Note (USerDetails(roles/authorities) and  (hasRole/hasAuthority))
+   - when you save userRole as "ROLE_USER" with prefix "ROLE_" then use authorities
+   - when normal "USER" then use roles()
+   - in filters hasRole always use "USER" without prefix irrespective of how you store in DB and that will not work as expected when you store authorities("USER").
+   - hasAuthorities alway match how to added in authorities("USER"). if "USER" then hasAuthorities("USER") will work. hasAuthorities("ROLE_USER") will break. also in this case hasRole("USER") not work .
+   - when authorities("ROLE_USER") then hasRole("USER") will work and hasAuthority("ROLE_USER") will work but hasAuthorities("USER") will break.
+   - When DB stores ROLE_USER, use .authorities(user.getRole()).
+- Summary : 
+  - When DB stores USER, use .roles(user.getRole()).
+  - hasRole("USER") checks for ROLE_USER, regardless of how that authority was created.
+  - hasAuthority("USER") checks exactly USER.
+  - hasAuthority("ROLE_USER") checks exactly ROLE_USER.
+  - .roles() automatically adds ROLE_; .authorities() does not.
+
+- Method level Security @PreAuthorize
+  - 
+- we need to add @EnableMethodSecurity on top of security config class
+- why to use this over url based auth
+  - lets suppose you have end point getAllUSer() "/getAll" you added security to this end point
+  - but from another end point this getAllUser() method of service is getting call so this security not becomes secure so to avoid this spring introduce method security which will then check authenticity before invoking method.
+- we need to add on method
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<UserDetailsResponse> getAllUsers() {
+  List<JobUser> jobUsers = repository.findAll();
+
+- Method level Security @PostAuthorize
+  - 
+- simillar to preauthorize but it runs post data is completed or fetch
+- usecase when you need to have validation before sending data back to caller that time it's used.
+ example code :
+  @PostAuthorize("returnObject.email == authentication.name")
+  public UserDetailsResponse getUser(Long userId) {
+  Optional<JobUser> optionalJobUser = repository.findByUserId(userId);
 
